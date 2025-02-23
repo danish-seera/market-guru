@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    username: root
+    url: jdbc:mysql://localhost:3306/indian_equity?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&characterSetResults=UTF-8&createDatabaseIfNotExist=true
+    password:
+  application.name: market-guru
+  data:
+    redis:
+      port: ${SPRING_REDIS_PORT:6379}
+      password: ${SPRING_REDIS_PASSWORD:}
+      ssl:
+        enabled: ${SPRING_REDIS_SSL:false}
+      host: ${SPRING_REDIS_HOST:localhost}
+      database: 1
+# Replace with your actual API key
+gurufocus:
+  api:
+    key: 2e8c17d2acca46b75b5ac34a011db858:32726aac634d3a80837101660fcf3df6
+
+logging:
+  level:
+    org: warn
+    com: info
+    root: warn
