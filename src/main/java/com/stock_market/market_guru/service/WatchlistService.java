@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -16,58 +17,67 @@ import java.util.Optional;
 @Service
 public class WatchlistService {
 
-    @Autowired
-    private GuruFocusService guruFocusService;
-    @Autowired
-    private WatchlistRepository watchlistRepository;
+  @Autowired private GuruFocusService guruFocusService;
+  @Autowired private WatchlistRepository watchlistRepository;
 
-    public List<Watchlist> getAllWatchlist() {
-        return watchlistRepository.findAll();
+  public List<Watchlist> getAllWatchlist() {
+    return watchlistRepository.findAll();
+  }
+
+  public Optional<Watchlist> getWatchlistByInstrument(String instrument) {
+    return watchlistRepository.findById(instrument);
+  }
+
+  @Async
+  public void refreshWatchlist() {
+    List<Watchlist> stocks = getAllWatchlist();
+    for (Watchlist stock : stocks) {
+      if (LocalDateTime.now().minusSeconds(7).isAfter(stock.getCreatedAt()))
+        refreshStockData(stock);
+      else
+        System.out.println("Skipping " + stock.getInstrument() + " as it was last updated less than 7 days ago.");
     }
+  }
 
-    public Optional<Watchlist> getWatchlistByInstrument(String instrument) {
-        return watchlistRepository.findById(instrument);
+  private void refreshStockData(Watchlist stock) {
+    String stockName = stock.getExchange() + ":" + stock.getInstrument();
+    try {
+      GuruFocusSummaryResponse guruFocusSummaryResponse = guruFocusService.getStockSummary(stockName);
+      if (guruFocusSummaryResponse != null) {
+        populateStockData(stock, guruFocusSummaryResponse);
+        watchlistRepository.saveAndFlush(stock);
+      }
+    } catch (Exception e) {
+      System.out.println("Error while refreshing stock:" + stockName + "Exception " + e.getMessage());
     }
+  }
 
-    @Async
-    public void refreshWatchlist() {
-        List<Watchlist> stocks = getAllWatchlist();
-        for (Watchlist stock : stocks) {
-            if (LocalDateTime.now().minusDays(7).isAfter(stock.getCreatedAt())) {
-                String stockName = stock.getExchange() + ":" + stock.getInstrument();
-                GuruFocusSummaryResponse guruFocusSummaryResponse = guruFocusService.getStockSummary(stockName);
-                if (guruFocusSummaryResponse != null) {
-                    General general = guruFocusSummaryResponse.getSummary().getGeneral();
-                    CompanyData companyData = guruFocusSummaryResponse.getSummary().getCompanyData();
-                    stock.setCompanyName(general.getCompany());
-                    stock.setGroupName(general.getGroup());
-                    stock.setSubIndustry(general.getSubindustry());
+  private void populateStockData(Watchlist stock, GuruFocusSummaryResponse guruFocusSummaryResponse) {
+    General general = guruFocusSummaryResponse.getSummary().getGeneral();
+    CompanyData companyData = guruFocusSummaryResponse.getSummary().getCompanyData();
+    stock.setCompanyName(general.getCompany());
+    stock.setGroupName(general.getGroup());
+    stock.setSubIndustry(general.getSubindustry());
 
-                    stock.setGfValue(Double.valueOf(companyData.getGfValue()));
-                    stock.setGfScoreMed(companyData.getGfScoreMed());
-                    stock.setGfScore(companyData.getGfScore());
-                    stock.setGfRiskAssessment(general.getRiskAssessment());
-                    stock.setGfRemark(general.getGfValuation());
-                    stock.setGfMomentum(Integer.valueOf(general.getRankMomentum()));
-                    stock.setValuationAvg(Double.valueOf(companyData.getValuationAvg()));
+    stock.setGfValue(new BigDecimal(companyData.getGfValue()));
+    stock.setGfScoreMed(companyData.getGfScoreMed());
+    stock.setGfScore(companyData.getGfScore());
+    stock.setGfRiskAssessment(general.getRiskAssessment());
+    stock.setGfRemark(general.getGfValuation());
+    stock.setGfMomentum(Integer.valueOf(general.getRankMomentum()));
+    stock.setValuationAvg(new BigDecimal(companyData.getValuationAvg()));
 
-
-                    stock.setMktCapital(Double.valueOf(companyData.getMktcap()));
-                    stock.setPrice52wHigh(Double.valueOf(companyData.getPrice52whigh()));
-                    stock.setPrice3yHigh(Double.valueOf(companyData.getPrice3yhigh()));
-                    stock.setPrice5yHigh(Double.valueOf(companyData.getPrice5yhigh()));
-                    stock.setPrice10yHigh(Double.valueOf(companyData.getPrice10yhigh()));
-                    stock.setPrice52wLow(Double.valueOf(companyData.getPrice52wlow()));
-                    stock.setPrice3yLow(Double.valueOf(companyData.getPrice3ylow()));
-                    stock.setPrice5yLow(Double.valueOf(companyData.getPrice5ylow()));
-                    stock.setPrice10yLow(Double.valueOf(companyData.getPrice10ylow()));
-                    stock.setBeta(Double.valueOf(companyData.getBeta()));
-                    stock.setShillerPE(Double.valueOf(companyData.getShillerPE()));
-                    stock.setShillerPEMed(Double.valueOf(companyData.getShillerPEMed()));
-                }
-            } else {
-                System.out.println("Skipping " + stock.getInstrument() + " as it was last updated less than 7 days ago.");
-            }
-        }
-    }
+    stock.setMktCapital(new BigDecimal(companyData.getMktcap()));
+    stock.setPrice52wHigh(new BigDecimal(companyData.getPrice52whigh()));
+    stock.setPrice3yHigh(new BigDecimal(companyData.getPrice3yhigh()));
+    stock.setPrice5yHigh(new BigDecimal(companyData.getPrice5yhigh()));
+    stock.setPrice10yHigh(new BigDecimal(companyData.getPrice10yhigh()));
+    stock.setPrice52wLow(new BigDecimal(companyData.getPrice52wlow()));
+    stock.setPrice3yLow(new BigDecimal(companyData.getPrice3ylow()));
+    stock.setPrice5yLow(new BigDecimal(companyData.getPrice5ylow()));
+    stock.setPrice10yLow(new BigDecimal(companyData.getPrice10ylow()));
+    stock.setBeta(new BigDecimal(companyData.getBeta()));
+    stock.setShillerPE(new BigDecimal(companyData.getShillerPE()));
+    stock.setShillerPEMed(new BigDecimal(companyData.getShillerPEMed()));
+  }
 }
