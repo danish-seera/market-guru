@@ -44,37 +44,37 @@ public class Watchlist {
     @Column(name = "gf_remark", length = 50)
     private String gfRemark;
 
-    @Column(name = "price52wlow", precision = 15, scale = 4)
+    @Column(name = "price_52w_low", precision = 15, scale = 4)
     private BigDecimal price52wLow;
 
-    @Column(name = "price52whigh", precision = 15, scale = 4)
+    @Column(name = "price_52w_high", precision = 15, scale = 4)
     private BigDecimal price52wHigh;
 
-    @Column(name = "price3ylow", precision = 15, scale = 4)
+    @Column(name = "price_3y_low", precision = 15, scale = 4)
     private BigDecimal price3yLow;
 
-    @Column(name = "price3yhigh", precision = 15, scale = 4)
+    @Column(name = "price_3y_high", precision = 15, scale = 4)
     private BigDecimal price3yHigh;
 
-    @Column(name = "price5ylow", precision = 15, scale = 4)
+    @Column(name = "price_5y_low", precision = 15, scale = 4)
     private BigDecimal price5yLow;
 
-    @Column(name = "price5yhigh", precision = 15, scale = 4)
+    @Column(name = "price_5y_high", precision = 15, scale = 4)
     private BigDecimal price5yHigh;
 
-    @Column(name = "price10yhigh", precision = 15, scale = 4)
+    @Column(name = "price_10y_high", precision = 15, scale = 4)
     private BigDecimal price10yHigh;
 
-    @Column(name = "price10ylow", precision = 15, scale = 4)
+    @Column(name = "price_10y_low", precision = 15, scale = 4)
     private BigDecimal price10yLow;
 
     @Column(name = "beta", precision = 10, scale = 4)
     private BigDecimal beta;
 
-    @Column(name = "ShillerPE", precision = 15, scale = 4)
+    @Column(name = "shiller_pe", precision = 15, scale = 4)
     private BigDecimal shillerPE;
 
-    @Column(name = "ShillerPE_med", precision = 15, scale = 4)
+    @Column(name = "shiller_pe_med", precision = 15, scale = 4)
     private BigDecimal shillerPEMed;
 
     @Column(name = "valuation_avg", precision = 15, scale = 4)
