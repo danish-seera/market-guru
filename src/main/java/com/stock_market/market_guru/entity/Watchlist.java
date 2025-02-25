@@ -25,7 +25,7 @@ public class Watchlist {
     private String companyName;
 
     // "group" is a reserved keyword; use backticks in the column name mapping
-    @Column(name = "`group`", length = 100)
+    @Column(name = "group_name", length = 100)
     private String groupName;
 
     @Column(name = "sub_industry", length = 100)

@@ -38,7 +38,7 @@ public class GuruFocusService {
     List<SourceDetail> sourceDetails = sourceDetailRepository.findBySourceName("guru-focus");
     for (Watchlist stock : stocks) {
       for (SourceDetail sourceDetail : sourceDetails) {
-        if (LocalDateTime.now().minusMinutes(5).isAfter(sourceDetail.getLastRefreshed())) {
+        if (LocalDateTime.now().minusDays(7).isAfter(sourceDetail.getLastRefreshed())) {
           String stockName = stock.getExchange() + ":" + stock.getInstrument();
           try {
             Object response = guruFocusClient.getStockInfo(sourceDetail.getToken(), stockName, sourceDetail.getCategory());
