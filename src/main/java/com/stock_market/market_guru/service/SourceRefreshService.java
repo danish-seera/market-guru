@@ -38,7 +38,7 @@ public class SourceRefreshService {
 
   @Async
   public void refreshSourceSnapshot(String source) {
-    log.info("Starting refreshSnapshot process for {}", source);
+    log.info("starting refresh-snapshot process for source:{}", source);
 
     var sourceDetails = sourceDetailRepository.findBySourceName(source);
     var stocks = watchlistRepository.findAll();
@@ -55,13 +55,13 @@ public class SourceRefreshService {
                       );
               if (snapshotOpt.isEmpty() ||
                       snapshotOpt.get().getUpdatedAt().isBefore(LocalDateTime.now().minusDays(7))) {
-                log.info("Processing stock {} with source {} and category {}",
+                log.info("processing stock:{} with source:{} and category:{}",
                         stockName,
                         sourceDetail.getSourceName(),
                         sourceDetail.getCategory());
                 processStock(stock, sourceDetail);
               } else {
-                log.info("Skipping stock {} with source {} and category {} as it was refreshed less than 7 days ago",
+                log.info("skipping stock:{} with source:{} and category:{} as it was refreshed less than 7 days ago",
                         stockName,
                         sourceDetail.getSourceName(),
                         sourceDetail.getCategory());
@@ -69,7 +69,7 @@ public class SourceRefreshService {
             })
     );
 
-    log.info("Completed refreshSnapshot process for {}", source);
+    log.info("completed refresh-snapshot process for source:{}", source);
   }
 
   private void processStock(Watchlist stock, SourceDetail sourceDetail) {
@@ -87,13 +87,13 @@ public class SourceRefreshService {
                 jsonResponse);
         stockRawSnapshotRepository.saveAndFlush(stockRawSnapshot);
       } else {
-        log.warn("Received null response from {}:{} for stock {}",
+        log.warn("received null response from {}:{} for stock;{}",
                 sourceDetail.getSourceName(),
                 sourceDetail.getCategory(),
                 stockName);
       }
     } catch (Exception e) {
-      log.error("Error processing {} API (category: {}) for stock {}: {}",
+      log.error("Error processing source:{} API category:{} for stock:{}: exception:{}",
               sourceDetail.getSourceName(),
               sourceDetail.getCategory(),
               stockName,
