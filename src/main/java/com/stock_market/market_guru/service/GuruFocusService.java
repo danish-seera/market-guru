@@ -14,8 +14,9 @@ import com.stock_market.market_guru.repository.SourceDetailRepository;
 import com.stock_market.market_guru.repository.StockRawSnapshotRepository;
 import com.stock_market.market_guru.repository.WatchlistRepository;
 import io.micrometer.common.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,8 @@ import java.util.List;
 @Service
 public class GuruFocusService {
 
+  private final Logger log = LoggerFactory.getLogger( GuruFocusService.class );
+
   @Autowired private ObjectMapper mapper;
   @Autowired private GuruFocusClient guruFocusClient;
   @Autowired private WatchlistRepository watchlistRepository;
@@ -34,44 +37,62 @@ public class GuruFocusService {
 
   @Async
   public void refreshSnapshot() {
+    log.info("Starting refreshSnapshot process");
+
     List<Watchlist> stocks = watchlistRepository.findAll();
     List<SourceDetail> sourceDetails = sourceDetailRepository.findBySourceName("guru-focus");
+
     for (Watchlist stock : stocks) {
       for (SourceDetail sourceDetail : sourceDetails) {
+        // Check if the source detail was last refreshed more than 7 days ago
         if (LocalDateTime.now().minusDays(7).isAfter(sourceDetail.getLastRefreshed())) {
           String stockName = stock.getExchange() + ":" + stock.getInstrument();
+          log.info("Processing stock {} with source {} and category {}", stockName,
+                  sourceDetail.getSourceName(), sourceDetail.getCategory());
+
           try {
-            Object response = guruFocusClient.getStockInfo(sourceDetail.getToken(), stockName, sourceDetail.getCategory());
+            Object response = guruFocusClient.getStockInfo(
+                    sourceDetail.getToken(),
+                    stockName,
+                    sourceDetail.getCategory()
+            );
+
             if (response != null) {
               String jsonResponse = new Gson().toJson(response);
-              StockRawSnapshot stockRawSnapshot =
-                      buildStockRawSnapshot(
-                              stock.getExchange(),
-                              stock.getInstrument(),
-                              sourceDetail.getSourceName(),
-                              sourceDetail.getCategory(),
-                              jsonResponse);
+              StockRawSnapshot stockRawSnapshot = buildStockRawSnapshot(
+                      stock.getExchange(),
+                      stock.getInstrument(),
+                      sourceDetail.getSourceName(),
+                      sourceDetail.getCategory(),
+                      jsonResponse
+              );
               stockRawSnapshotRepository.saveAndFlush(stockRawSnapshot);
+
               GuruFocusSummaryResponse guruFocusSummaryResponse =
                       mapper.readValue(jsonResponse, GuruFocusSummaryResponse.class);
+
               if (guruFocusSummaryResponse != null) {
                 populateStockData(stock, guruFocusSummaryResponse);
                 watchlistRepository.saveAndFlush(stock);
+                log.info("Successfully updated stock {} with the latest snapshot", stockName);
+              } else {
+                log.warn("Parsed GuruFocusSummaryResponse is null for stock {}", stockName);
               }
             } else {
-              System.out.printf("response is null from %s:%s for stock:%s\n", sourceDetail.getSourceName(), sourceDetail.getCategory(), stockName);
+              log.warn("Received null response from {}:{} for stock {}",
+                      sourceDetail.getSourceName(), sourceDetail.getCategory(), stockName);
             }
           } catch (Exception e) {
-            System.out.printf("Error while processing %s api category:%s, for stock %s \n", sourceDetail.getSourceName(), sourceDetail.getCategory(), stockName);
+            log.error("Error processing {} API (category: {}) for stock {}: {}",
+                    sourceDetail.getSourceName(), sourceDetail.getCategory(), stockName, e.getMessage(), e);
           }
         } else {
-          System.out.println(
-              "Skipping "
-                  + stock.getInstrument()
-                  + " as it was last updated less than 5 minutes ago.");
+          log.info("Skipping {} because last refreshed at {} is within the past 7 days",
+                  stock.getInstrument(), sourceDetail.getLastRefreshed());
         }
       }
     }
+    log.info("Completed refreshSnapshot process");
   }
 
   private StockRawSnapshot buildStockRawSnapshot(
