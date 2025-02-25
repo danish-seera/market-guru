@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WatchlistRepository extends JpaRepository<Watchlist, String> {
-    // 'instrument' is the primary key (of type String)
 }

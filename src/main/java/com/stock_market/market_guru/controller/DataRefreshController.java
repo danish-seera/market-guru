@@ -1,5 +1,6 @@
 package com.stock_market.market_guru.controller;
 
+import com.stock_market.market_guru.service.GuruFocusService;
 import com.stock_market.market_guru.service.WatchlistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,14 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/watchlist")
-public class WatchlistController {
+public class DataRefreshController {
 
     @Autowired
     private WatchlistService watchlistService;
+    @Autowired
+    private GuruFocusService guruFocusService;
 
-    @GetMapping("/refresh")
-    public String refreshWatchlist() {
-        watchlistService.refreshWatchlist();
+    @GetMapping("/refresh-guru-focus")
+    public String refreshGuruFocus() {
+        guruFocusService.refreshSnapshot();
         return "Success";
     }
 }
