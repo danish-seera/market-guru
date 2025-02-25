@@ -4,7 +4,6 @@ import com.stock_market.market_guru.entity.SourceDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository

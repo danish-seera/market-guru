@@ -5,10 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StockRawSnapshotRepository extends JpaRepository<StockRawSnapshot, Integer> {
-    // Custom query methods can be added here
-    // Example:
      List<StockRawSnapshot> findByExchangeAndInstrument(String exchange, String instrument);
+
+     Optional<StockRawSnapshot> findByExchangeAndInstrumentAndSourceAndCategory(String exchange, String instrument, String source, String category);
 }
