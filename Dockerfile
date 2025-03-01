@@ -14,4 +14,11 @@ RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 USER appuser
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"] 
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Add these before the ENTRYPOINT line
+ENV SPRING_DATASOURCE_URL=jdbc:postgresql://dpg-cv1dabdds78s73docqvg-a.frankfurt-postgres.render.com/equity
+ENV SPRING_DATASOURCE_USERNAME=equity_user
+ENV SPRING_DATASOURCE_PASSWORD=vS4b9ghFNUAbHjB7jQ63u9E59VAFjNGh
+ENV SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+ENV SPRING_JPA_HIBERNATE_DDL_AUTO=update 
