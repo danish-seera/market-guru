@@ -64,7 +64,8 @@ public class SecurityConfig {
                     // Public endpoints
                     .requestMatchers("/v1/auth/**").permitAll()
                     .requestMatchers("/v1/refresh/**").permitAll()
-                    
+                    .requestMatchers("/v1/ping").permitAll() // Allow ping endpoint without authentication
+
                     // Protected endpoints - require authentication
                     .requestMatchers("/v1/watchlist/**").authenticated()
                     .requestMatchers("/v1/holdings/**").authenticated() 
