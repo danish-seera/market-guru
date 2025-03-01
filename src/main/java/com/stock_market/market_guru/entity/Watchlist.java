@@ -4,8 +4,6 @@ import lombok.Data;
 
 import jakarta.persistence.*;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

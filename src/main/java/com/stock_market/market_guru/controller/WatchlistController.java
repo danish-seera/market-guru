@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -31,7 +30,7 @@ public class WatchlistController {
         try {
             return watchlistService.getWatchlistByExchangeAndInstrument(exchange, instrument)
                     .map(watchlist -> {
-                        logger.info("Successfully fetched watchlist: {}", watchlist.getCompanyName());
+                        // logger.info("Successfully fetched watchlist: {}", watchlist.getCompanyName());
                         return ResponseEntity.ok(stockMapper.buildStockResponse(watchlist));
                     })
                     .orElseGet(() -> {
@@ -51,7 +50,7 @@ public class WatchlistController {
         try {
 
             List<Watchlist> watchlists = watchlistService.getAllWatchlists();
-            logger.info("Successfully fetched {} watchlists", watchlists.size());
+            // logger.info("Successfully fetched {} watchlists", watchlists.size());
             return ResponseEntity.ok(watchlists.stream().map(stockMapper::buildStockResponse).toList());
         } catch (Exception e) {
             logger.error("Error fetching watchlists: {}", e.getMessage());

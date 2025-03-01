@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,15 +29,16 @@ public class HoldingsController {
 
     // Get all holdings
     @GetMapping
-    public ResponseEntity<List<HoldingsResponse>> getAllHoldings() {
+    public ResponseEntity<List<HoldingsResponse>> getAllHoldings(@RequestParam(name = "userId", required = false) Integer userId) {
         logger.info("Received request to fetch all holdings");
         try {
-            List<Holdings> holdings = holdingsService.getAllHoldings();
+
+            List<Holdings> holdings = holdingsService.getAllHoldings(userId);
             List<HoldingsResponse> responses = holdings.stream()
                     .map(holdingsMapper::buildHoldingsResponse)
                     .collect(Collectors.toList());
             
-            logger.info("Successfully fetched {} holdings", holdings.size());
+            // logger.info("Successfully fetched {} holdings", holdings.size());
             return ResponseEntity.ok(responses);
         } catch (Exception e) {
             logger.error("Error fetching all holdings: {}", e.getMessage());
@@ -54,7 +56,7 @@ public class HoldingsController {
                     .map(holdingsMapper::buildHoldingsResponse)
                     .collect(Collectors.toList());
             
-            logger.info("Successfully fetched {} holdings for user: {}", holdings.size(), userId);
+            // logger.info("Successfully fetched {} holdings for user: {}", holdings.size(), userId);
             return ResponseEntity.ok(responses);
         } catch (Exception e) {
             logger.error("Error fetching holdings for user {}: {}", userId, e.getMessage());

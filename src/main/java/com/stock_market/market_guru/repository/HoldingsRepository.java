@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface HoldingsRepository extends JpaRepository<Holdings, Long> {
-//    List<Holdings> findByUserId(String userId);
+    List<Holdings> findAllByUserId(Integer userId);
+
 } 

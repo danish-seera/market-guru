@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class HoldingsServiceImpl implements HoldingsService {
@@ -21,13 +20,13 @@ public class HoldingsServiceImpl implements HoldingsService {
 
     @Override
     public List<Holdings> getHoldingsByUser(String userId) {
-        logger.info("Fetching all holdings for user: {}", userId);
+        // logger.info("Fetching all holdings for user: {}", userId);
         return holdingsRepository.findAll();
     }
 
     @Override
-    public List<Holdings> getAllHoldings() {
-        logger.info("Fetching all holdings");
-        return holdingsRepository.findAll();
+    public List<Holdings> getAllHoldings(Integer userId) {
+        // logger.info("Fetching all holdings");
+        return holdingsRepository.findAllByUserId(userId);
     }
 } 
