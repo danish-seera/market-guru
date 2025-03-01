@@ -6,6 +6,7 @@ import com.stock_market.market_guru.service.HoldingsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,12 +20,14 @@ public class HoldingsServiceImpl implements HoldingsService {
     private HoldingsRepository holdingsRepository;
 
     @Override
+    @Cacheable(value = "holdings-1", key = "#userId")
     public List<Holdings> getHoldingsByUser(String userId) {
         // logger.info("Fetching all holdings for user: {}", userId);
         return holdingsRepository.findAll();
     }
 
     @Override
+    @Cacheable(value = "holdings-2", key = "#userId")
     public List<Holdings> getAllHoldings(Integer userId) {
         // logger.info("Fetching all holdings");
         return holdingsRepository.findAllByUserId(userId);

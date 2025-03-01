@@ -16,17 +16,17 @@ spring:
   application.name: market-guru
   data:
     redis:
-      port: ${SPRING_REDIS_PORT:6379}
+      port: 6379
       password: ${SPRING_REDIS_PASSWORD:}
       ssl:
         enabled: ${SPRING_REDIS_SSL:false}
-      host: ${SPRING_REDIS_HOST:localhost}
+      host: ${SPRING_REDIS_HOST:red-cv1kqoaj1k6c7394qgig}
       database: 1
 logging:
   level:
-    org: warn
+    org: info
     com: info
-    root: warn
+    root: info
   webmvc:
     cors:
       allowed-origins: https://market-guru-ui-353d.vercel.app
