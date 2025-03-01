@@ -26,13 +26,7 @@ public class SourceDetail {
     private String category;
 
     @Column(length = 255)
-    private String prompt;
-
-    @Column(length = 255)
     private String token;
-
-    @Column(name = "last_refreshed", nullable = false)
-    private LocalDateTime lastRefreshed;
 
     @CreationTimestamp
     @Column(name = "created_on", updatable = false)
@@ -66,28 +60,12 @@ public class SourceDetail {
         this.category = category;
     }
 
-    public String getPrompt() {
-        return prompt;
-    }
-
-    public void setPrompt(String prompt) {
-        this.prompt = prompt;
-    }
-
     public String getToken() {
         return token;
     }
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public LocalDateTime getLastRefreshed() {
-        return lastRefreshed;
-    }
-
-    public void setLastRefreshed(LocalDateTime lastRefreshed) {
-        this.lastRefreshed = lastRefreshed;
     }
 
     public LocalDateTime getCreatedOn() {

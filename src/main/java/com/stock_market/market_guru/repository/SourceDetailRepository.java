@@ -10,4 +10,5 @@ import java.util.List;
 public interface SourceDetailRepository extends JpaRepository<SourceDetail, Integer> {
     // Custom methods
     List<SourceDetail> findBySourceName(String sourceName);
+    SourceDetail findBySourceNameAndCategory(String sourceName, String category);
 }

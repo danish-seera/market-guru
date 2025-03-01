@@ -41,10 +41,10 @@ public class SourceRefreshService {
     log.info("starting refresh-snapshot process for source:{}", source);
 
     var sourceDetails = sourceDetailRepository.findBySourceName(source);
-    var stocks = watchlistRepository.findAll();
+    var watchlistStocks = watchlistRepository.findAll();
 
     sourceDetails.forEach(sourceDetail ->
-            stocks.forEach(stock -> {
+            watchlistStocks.forEach(stock -> {
               var stockName = stock.getExchange() + ":" + stock.getInstrument();
               var snapshotOpt = stockRawSnapshotRepository
                       .findByExchangeAndInstrumentAndSourceAndCategory(

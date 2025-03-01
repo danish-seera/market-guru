@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class General {
+    private String price;
     private String company;
     @JsonProperty("gf_score")
     private String gfScore;
@@ -22,6 +23,14 @@ public class General {
     private String riskAssessment;
     @JsonProperty("gf_valuation")
     private String gfValuation;
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
 
     public String getCompany() {
         return company;

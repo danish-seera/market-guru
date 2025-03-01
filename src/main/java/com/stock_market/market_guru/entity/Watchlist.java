@@ -17,6 +17,9 @@ public class Watchlist {
     @Column(name = "exchange", length = 16, nullable = false)
     private String exchange;
 
+    @Column(name = "last_trade_price")
+    private BigDecimal lastTradePrice;
+
     @Id
     @Column(name = "instrument", length = 45, nullable = false)
     private String instrument;
@@ -93,6 +96,16 @@ public class Watchlist {
 
     @Column(name = "updated_at", nullable = false, columnDefinition = "datetime default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
+
+
+
+    public BigDecimal getLastTradePrice() {
+        return lastTradePrice;
+    }
+
+    public void setLastTradePrice(BigDecimal lastTradePrice) {
+        this.lastTradePrice = lastTradePrice;
+    }
 
     public String getExchange() {
         return exchange;

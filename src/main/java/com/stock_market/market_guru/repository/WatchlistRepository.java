@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface WatchlistRepository extends JpaRepository<Watchlist, String> {
+public interface WatchlistRepository extends JpaRepository<Watchlist, Long> {
     Optional<Watchlist> findByExchangeAndInstrument(String exchange, String instrument);
 }

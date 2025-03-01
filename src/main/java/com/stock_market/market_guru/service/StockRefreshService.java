@@ -5,13 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stock_market.market_guru.client.respone.CompanyData;
 import com.stock_market.market_guru.client.respone.General;
 import com.stock_market.market_guru.client.respone.GuruFocusSummaryResponse;
-import com.stock_market.market_guru.entity.StockRawSnapshot;
 import com.stock_market.market_guru.entity.Watchlist;
 import com.stock_market.market_guru.repository.StockRawSnapshotRepository;
 import com.stock_market.market_guru.repository.WatchlistRepository;
 import io.micrometer.common.util.StringUtils;
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,20 +28,20 @@ public class StockRefreshService {
   public void refreshStockAll() {
     log.info("Starting full stock refresh for all stocks");
     var stocks = watchlistRepository.findAll();
-    stocks.forEach(this::refreshStockSnapshot);
+    stocks.forEach(this::refreshStock);
     log.info("Completed full stock refresh for all stocks");
   }
 
-  public void refreshStockSnapshot(String exchange, String instrument) {
-    log.info("Refreshing stock snapshot for exchange: {} and instrument: {}", exchange, instrument);
+  public void refreshStock(String exchange, String instrument) {
+    log.info("Refreshing stock for exchange: {} and instrument: {}", exchange, instrument);
     watchlistRepository.findByExchangeAndInstrument(exchange, instrument)
             .ifPresentOrElse(
-                    this::refreshStockSnapshot,
+                    this::refreshStock,
                     () -> log.warn("No stock found for exchange: {} and instrument: {}", exchange, instrument)
             );
   }
 
-  private void refreshStockSnapshot(Watchlist stock) {
+  private void refreshStock(Watchlist stock) {
     var snapshots = stockRawSnapshotRepository.findByExchangeAndInstrument(stock.getExchange(), stock.getInstrument());
     if (snapshots.isEmpty()) {
       log.warn("No snapshots found for stock {}:{}", stock.getExchange(), stock.getInstrument());
@@ -60,7 +58,7 @@ public class StockRefreshService {
       if (guruResponse != null) {
         populateStockData(stock, guruResponse);
         watchlistRepository.saveAndFlush(stock);
-        log.info("Successfully updated stock {} with the latest snapshot", stock.getInstrument());
+        log.info("Successfully updated stock {} with the latest snapshot of guru-focus", stock.getInstrument());
       } else {
         log.warn("Parsed GuruFocusSummaryResponse is null for stock {}", stock.getInstrument());
       }
@@ -74,6 +72,7 @@ public class StockRefreshService {
     General general = guruFocusSummaryResponse.getSummary().getGeneral();
     CompanyData companyData = guruFocusSummaryResponse.getSummary().getCompanyData();
     stock.setCompanyName(general.getCompany());
+    stock.setLastTradePrice(getBigDecimal(general.getPrice()));
     stock.setGroupName(general.getGroup());
     stock.setSubIndustry(general.getSubindustry());
 
@@ -99,7 +98,7 @@ public class StockRefreshService {
     stock.setShillerPEMed(getBigDecimal(companyData.getShillerPEMed()));
   }
 
-  private BigDecimal getBigDecimal(String number) {
+  public static BigDecimal getBigDecimal(String number) {
     if (StringUtils.isNotEmpty(number)) return new BigDecimal(number);
     else return null;
   }
