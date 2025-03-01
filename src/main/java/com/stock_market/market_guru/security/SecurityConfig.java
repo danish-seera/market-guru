@@ -61,24 +61,31 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> 
                 auth
-                    .requestMatchers("/api/v1/auth/**").permitAll()
-                    .requestMatchers("/v1/**").permitAll() // Temporarily allow all /v1/* endpoints without authentication
-                    // .requestMatchers("/v1/refresh/**").permitAll()
-                    // .requestMatchers("/v1/watchlist/**").permitAll()
-                    // .requestMatchers("/v1/holdings/**").permitAll()
-                    // .requestMatchers("/v1/trades/**").permitAll()
+                    // Public endpoints
+                    .requestMatchers("/v1/auth/**").permitAll()
+                    .requestMatchers("/v1/refresh/**").permitAll()
+                    
+                    // Protected endpoints - require authentication
+                    .requestMatchers("/v1/watchlist/**").authenticated()
+                    .requestMatchers("/v1/holdings/**").authenticated() 
+                    .requestMatchers("/v1/trades/**").authenticated()
+                    
+                    // Admin only endpoints
+                    .requestMatchers("/v1/admin/**").hasRole("ADMIN")
+                    
+                    // Default rule - require authentication for all other endpoints
                     .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.setContentType("application/json");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write("{\"error\":\"" + authException.getMessage() + "\"}");
+                    response.getWriter().write("{\"error\":\"" + authException.getMessage() + "\", \"status\":\"unauthorized\"}");
                 })
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     response.setContentType("application/json");
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.getWriter().write("{\"error\":\"" + accessDeniedException.getMessage() + "\"}");
+                    response.getWriter().write("{\"error\":\"" + accessDeniedException.getMessage() + "\", \"status\":\"forbidden\"}");
                 })
             );
         

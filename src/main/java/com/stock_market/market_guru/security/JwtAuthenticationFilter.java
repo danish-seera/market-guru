@@ -34,28 +34,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
-            if (jwt != null) {
+            if (jwt != null && jwtUtils.validateToken(jwt)) {
                 String username = jwtUtils.extractUsername(jwt);
                 
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                
+                // Validate that the user is still active/valid
+                if (userDetails.isEnabled()) {
+                    UsernamePasswordAuthenticationToken authentication = 
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     
-                    if (jwtUtils.validateToken(jwt, userDetails)) {
-                        UsernamePasswordAuthenticationToken authentication =
-                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                        
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    logger.warn("User account is disabled: {}", username);
                 }
             }
-        } catch (io.jsonwebtoken.MalformedJwtException e) {
-            // Only log at debug level for malformed tokens - this is expected for many requests
-            logger.debug("Invalid JWT token format: {}", e.getMessage());
-        } catch (io.jsonwebtoken.ExpiredJwtException e) {
-            logger.debug("JWT token is expired: {}", e.getMessage());
         } catch (Exception e) {
-            // Log other exceptions at error level
             logger.error("Cannot set user authentication: {}", e.getMessage(), e);
         }
         
