@@ -7,26 +7,16 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
       - redis
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/indian_equity?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=yes&characterEncoding=UTF-8&characterSetResults=UTF-8&createDatabaseIfNotExist=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: rootpassword
+      # PostgreSQL configuration
+      SPRING_DATASOURCE_URL: jdbc:postgresql://dpg-cv1dabdds78s73docqvg-a.frankfurt-postgres.render.com/equity
+      SPRING_DATASOURCE_USERNAME: equity_user
+      SPRING_DATASOURCE_PASSWORD: vS4b9ghFNUAbHjB7jQ63u9E59VAFjNGh
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      # Redis configuration
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
-
-  mysql:
-    image: mysql:8.0
-    restart: always
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_DATABASE: indian_equity
-      MYSQL_ROOT_PASSWORD: rootpassword
-    volumes:
-      - mysql-data:/var/lib/mysql
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   redis:
     image: redis:6
@@ -37,5 +27,4 @@ services:
       - redis-data:/data
 
 volumes:
-  mysql-data:
   redis-data: 

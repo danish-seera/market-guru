@@ -1,8 +1,14 @@
 spring:
   datasource:
-    username: root
-    url: jdbc:mysql://localhost:3306/indian_equity?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&characterSetResults=UTF-8&createDatabaseIfNotExist=true
-    password:
+    username: equity_user
+    url: jdbc:postgresql://dpg-cv1dabdds78s73docqvg-a.frankfurt-postgres.render.com/equity
+    password: vS4b9ghFNUAbHjB7jQ63u9E59VAFjNGh
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
   application.name: market-guru
   data:
     redis:
