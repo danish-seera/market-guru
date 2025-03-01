@@ -98,7 +98,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://market-guru-ui-mqvr.vercel.app"));
+        configuration.setAllowedOrigins(Arrays.asList("https://market-guru-ui.vercel.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token", "origin", "x-requested-with", "accept"));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
