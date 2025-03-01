@@ -5,12 +5,12 @@ spring:
     password: ${SQL_PASSWORD:vS4b9ghFNUAbHjB7jQ63u9E59VAFjNGh}
     driver-class-name: org.postgresql.Driver
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    # database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         show_sql: true
   application.name: market-guru
