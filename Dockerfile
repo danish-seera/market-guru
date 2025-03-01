@@ -17,8 +17,8 @@ EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 # postgresql://equity_user:vS4b9ghFNUAbHjB7jQ63u9E59VAFjNGh@dpg-cv1dabdds78s73docqvg-a/equity
 # Add these before the ENTRYPOINT line
-ENV SQL_USERNAME=jdbc:postgresql://dpg-cv1dabdds78s73docqvg-a/equity
-ENV SQL_URL=equity_user
+ENV SQL_URL=jdbc:postgresql://dpg-cv1dabdds78s73docqvg-a/equity
+ENV SQL_USERNAME=equity_user
 ENV SQL_PASSWORD=vS4b9ghFNUAbHjB7jQ63u9E59VAFjNGh
 ENV SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
 ENV SPRING_JPA_HIBERNATE_DDL_AUTO=update 
