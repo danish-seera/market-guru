@@ -1,8 +1,8 @@
 spring:
   datasource:
-    username: equity_user
-    url: jdbc:postgresql://dpg-cv1dabdds78s73docqvg-a.frankfurt-postgres.render.com/equity
-    password: vS4b9ghFNUAbHjB7jQ63u9E59VAFjNGh
+    username: ${SQL_USERNAME:equity_user}
+    url: ${SQL_URL:jdbc:postgresql://dpg-cv1dabdds78s73docqvg-a.frankfurt-postgres.render.com/equity}
+    password: ${SQL_PASSWORD:vS4b9ghFNUAbHjB7jQ63u9E59VAFjNGh}
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
