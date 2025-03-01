@@ -34,24 +34,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
-            if (jwt != null && jwtUtils.validateToken(jwt)) {
+            if (jwt != null) {
                 String username = jwtUtils.extractUsername(jwt);
                 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                
-                // Validate that the user is still active/valid
-                if (userDetails.isEnabled()) {
-                    UsernamePasswordAuthenticationToken authentication = 
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                     
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
-                    logger.warn("User account is disabled: {}", username);
+                    if (jwtUtils.validateToken(jwt, userDetails)) {
+                        UsernamePasswordAuthenticationToken authentication = 
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
             }
         } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}", e.getMessage(), e);
+            logger.error("Cannot set user authentication: {}", e.getMessage());
         }
         
         filterChain.doFilter(request, response);
